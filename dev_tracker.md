@@ -20,7 +20,7 @@ With so many packages and frameworks, it can be difficult to get a project worki
 
 - Next, you need to create a new D1 database on Cloudflare.  Run **wrangler d1 create your-database-name**. This will create the new database, and will provide some settings that you will need to bind the database.
 
-<div class="alert alert-danger">
+<div style="color:red">
   All the docs refer to a file called wrangler.toml, that should be in the root folder. This file is not created by default, and I had to create it manually. I'm not sure if this is a bug or the docs are out of date. However, I just created one manually to save the [[d1_databases]] settings. When I figure out where the values need to go, I will update this.
 </div>
 
