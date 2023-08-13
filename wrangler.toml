@@ -2,7 +2,13 @@ name = "protofolio"
 main = "./public"
 compatibility_date = "2023-06-21"
 
+[[kv_namespaces]] 
+binding = "user"
+preview_id = "eda517805dbd4dfbb212c5913cdc1716"
+id = "eda517805dbd4dfbb212c5913cdc1716"
+
 [[d1_databases]]
 binding = "DB" # i.e. available in your Worker on env.DB
 database_name = "protofolio-app-d1"
 database_id = "a4221ff4-b89f-4b09-b7aa-e5dd4f18a3a1"
+preview_database_id = "local-test-db"
