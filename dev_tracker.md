@@ -25,3 +25,48 @@ With so many packages and frameworks, it can be difficult to get a project worki
 </div>
 
 - Anyway, now logged into the Cloudflare and having run **wrangler** commands, the boilerplate code should run without errors. Run **npm run dev** again to see. If there are still errors, try running **npx remix dev** then stop the server and run **npm run dev** again. This worked for me.
+
+### Adding Tailwind CSS, and other packages
+- First off, the most detailed guide I found for building a remix app is on the [Prisma Blog](https://www.prisma.io/blog/fullstack-remix-prisma-mongodb-1-7D0BfTXBmB6r). It works for non-Cloudflare projects, but there are a few things that are perhaps unnecessary or out of date.  Prisma does not work well with Cloudflare, and there is some poorly documented guides on using the Data Proxy service from Prisma to get it to work. I would have used CockroachDB as the cloud database in the project, since the free tier is the most generous that I have seen at this time. However, adding proxies and a database from another location seemed to be too complicated and probably defeats the purpose of using Cloudflare. So I decided to use the D1 database from Cloudflare. 
+- The Prisma blog post also uses MongoDB, so some of the instructions are not relevant. But for the most part, I followed the instructions and altered them to fit my stack.
+- So, according to the [Tailwind CSS docs](https://tailwindcss.com/docs/guides/remix) Remix has built-in support for Tailwind CSS. So I followed the instructions there and installed Tailwind.
+  - Enable built-in Tailwind CSS support by adding the following to your remix.config.js file:
+  ```
+    module.exports = {
+        tailwind: true,
+    }
+  ```    
+  - Then run **npm install -D tailwindcss** to install Tailwind CSS as a development dependency.
+  - The initialize Tailwind by running **npx tailwindcss init --ts**. This will create a tailwind.config.ts file in the root directory.
+  - insert **'./app/\**/*.{js,jsx,ts,tsx}'** into the content array in the tailwind.config.ts file. This will allow Tailwind to know the paths to all of the template files.
+  - Next, add the Tailwind directives to the CSS by creating a new file in the app folder called **tailwind.css**. Then add the following to the file:
+  ```
+    @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+  ```
+  - Import the newly-created CSS file into the **./app/root.tsx** file by adding the following line to the top of the file:
+  ```
+    import stylesheet from "~/tailwind.css";
+  ```
+  and then replacing the links LinksFunction with the following:
+  ```
+    export const links: LinksFunction = () => [
+    { rel: "stylesheet", href: stylesheet },
+    ];
+  ```
+  - TailwindCSS is now installed, so run **npm run dev** to start the development server. Nothing should have changed, yet. 
+  - In the **./app/routes/_index.tsx** file, replace the Index function with the following, the save:
+  ```
+    export default function Index() {
+
+  ```
+        return (
+            <div className="h-screen bg-slate-700 flex justify-center items-center">
+            <h2 className="text-blue-600 font-extrabold text-5xl">TailwindCSS Is Working!</h2>
+            </div>
+        )
+        }
+  ```
+
+  
