@@ -15,4 +15,13 @@ With so many packages and frameworks, it can be difficult to get a project worki
 
 ### Setting up all the Cloudflare stuff
 - Check if you have wrangler installed by running **wrangler --version**. If you don't have it installed, run **npm install -g wrangler**. This will install wrangler globally. Check out the [wrangler docs](https://developers.cloudflare.com/workers/cli-wrangler/install-update) for more info.
-- 
+
+- Next, you need to log in to your Cloudflare account. Run **wrangler login** and follow the instructions. This will open a webpage to attempt to log in, and give permission to connect the app to your account. 
+
+- Next, you need to create a new D1 database on Cloudflare.  Run **wrangler d1 create your-database-name**. This will create the new database, and will provide some settings that you will need to bind the database.
+
+<div class="alert alert-danger">
+  All the docs refer to a file called wrangler.toml, that should be in the root folder. This file is not created by default, and I had to create it manually. I'm not sure if this is a bug or the docs are out of date. However, I just created one manually to save the [[d1_databases]] settings. When I figure out where the values need to go, I will update this.
+</div>
+
+- Anyway, now logged into the Cloudflare and having run **wrangler** commands, the boilerplate code should run without errors. Run **npm run dev** again to see. If there are still errors, try running **npx remix dev** then stop the server and run **npm run dev** again. This worked for me.
