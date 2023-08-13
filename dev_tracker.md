@@ -14,3 +14,5 @@ With so many packages and frameworks, it can be difficult to get a project worki
   - In this case, cloudflare uses wrangler to deploy the project, and since Cloudflare is a bit different than a typical dev environment, a few more things need to be set up. In the terminal you should see an error that says, Error: No route matches URL "/cdn-cgi/mf/reload" (404). Fixing this will be the next step.
 
 ### Setting up all the Cloudflare stuff
+- Check if you have wrangler installed by running **wrangler --version**. If you don't have it installed, run **npm install -g wrangler**. This will install wrangler globally. Check out the [wrangler docs](https://developers.cloudflare.com/workers/cli-wrangler/install-update) for more info.
+- 
