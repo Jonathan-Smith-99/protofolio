@@ -18,11 +18,25 @@ With so many packages and frameworks, it can be difficult to get a project worki
 
 - Next, you need to log in to your Cloudflare account. Run **wrangler login** and follow the instructions. This will open a webpage to attempt to log in, and give permission to connect the app to your account. 
 
-- Next, you need to create a new D1 database on Cloudflare.  Run **wrangler d1 create your-database-name**. This will create the new database, and will provide some settings that you will need to bind the database.
+- Next, you need to create a new D1 database on Cloudflare.  Run **wrangler d1 create your-database-name**. This will create the new database, and will provide some settings that you will need to bind the database.  While you are here, you can also create a new KV namespace by running **wrangler kv:namespace create your-namespace-name**. This will create a new KV namespace, and will provide some settings that you will need to bind the namespace.
 
 > [!WARNING]
->  All the docs refer to a file called wrangler.toml, that should be in the root folder. This file is not created by default, and I had to create it manually. I'm not sure if this is a bug or the docs are out of date. However, I just created one manually to save the [[d1_databases]] settings. When I figure out where the values need to go, I will update this.
+>  All the docs refer to a file called wrangler.toml, that should be in the root folder. This file is not created by default, and I had to create it manually. I'm not sure if this is a bug or the docs are out of date. However, I just created one manually to save the [[d1_databases]] settings. When I figure out where the values need to go, I will update this.  NOTE: this seems to work, but I haven't created the bindings yet, so I'm not sure if it will work when I do that.
 
+```
+// wrangler.toml
+name = "protofolio"
+main = "./public"
+compatibility_date = "2023-06-21"
+
+kv_namespaces = { binding = "user", preview_id = "eda517805dbd4dfbb212c5913cdc1716", id = "eda517805dbd4dfbb212c5913cdc1716" }
+
+[[d1_databases]]
+binding = "DB" # i.e. available in your Worker on env.DB
+database_name = "protofolio-app-d1"
+database_id = "a4221ff4-b89f-4b09-b7aa-e5dd4f18a3a1"
+preview_database_id = "local-test-db"
+```
 
 - Anyway, now logged into the Cloudflare and having run **wrangler** commands, the boilerplate code should run without errors. Run **npm run dev** again to see. If there are still errors, try running **npx remix dev** then stop the server and run **npm run dev** again. This worked for me.
 
@@ -69,4 +83,44 @@ With so many packages and frameworks, it can be difficult to get a project worki
         }
   ```
 
-  
+TODO: add more steps here
+
+## Installing Icons and Fonts
+- Heroicons is one of many icon libraries that can be used with Remix. Heroicons is made by the makers of Tailwind CSS so it is easy to install and use.
+  ```
+    npm install @heroicons/react
+  ``` 
+- Some Google Fonts
+  ```
+    // tailwind.css or the main css file
+    @import url("https://fonts.googleapis.com/css?family=Poppins|Fira+Sans|Merriweather&display=swap");
+  ```
+## Installing Drizzle ORM
+
+
+## Installing Clerk
+
+[Clerk](https://clerk.com/) is an authentication service that also claims to be a complete user and session management library. It can use a variety of methods from email/password to social logins. Also, the service claims to be edge- and SSR-friendly, which is what Cloudflare and Remix are, respectively. It also has a free tier that is very generous, allowing 5,000 monthly active users. With the free version, a Clerk logo is visible on the components, and it does not allow phone verification or use of some advanced, premium features. It also has a Remix guide and example project so it should be easy to integrate. [TODO: add links]
+
+- Created a Clerk account, and then created a new project. There are several steps that need to be completed at production time, but for now just a few.
+
+- Not required yet but set up a Google Cloud Platform project and created oauth credentials for the project. This will be used to authenticate users with Google. Several steps are required to use Google as a Social Login, such as providing id's secrets, and URIs between Google and Clerk. [TODO: add links]
+
+- Following the [Clerk Remix Quickstart](https://clerk.com/docs/quickstarts/get-started-with-remix):
+  - install Clerk **  npm install @clerk/remix**
+  - set the Clerk Environment Keys into the .env file. These are found in the Clerk dashboard. At this point I had to create a .env in the project root folder, and check the .gitignore file to make sure it was not being ignored. The .env file should look like this:
+  ```
+  CLERK_PUBLISHABLE_KEY=pk_test_••••••••••••••••••••••••••••••••••
+  CLERK_SECRET_KEY=sk_test_••••••••••••••••••••••••••••••••••
+  ```
+  - Configure the rootAuthLoader in the root.tsx based on the Clerk docs. This involves importing the rootAuthLoader, exporting a LoaderFunction with the rootAuthLoader.
+  - Configure the ClerkApp component in the root.tsx file. This involves importing the ClerkApp component, and then wrapping the App function with the ClerkApp. Clerk provides a ClerkApp wrapper to provide the authentication state to your React tree. This helper works with Remix SSR out-of-the-box and follows the "higher-order component" paradigm.
+  - Set root ErrorBoundary by importing the V2_ClerkErrorBoundary component and creating a new ErrorBoundary component.
+
+## Sign in/Sign Up, etc
+### Sign up
+- these routes I copied from the [github repo](https://github.com/clerkinc/remix-auth-starter/tree/main/app/routes)
+  - **./app/routes/sign-up/$.tsx**
+  - **./app/routes/sign-in/$.tsx**
+  - **./app/routes/user/$.tsx**
+- the components for these pages are imported from the Clerk library.

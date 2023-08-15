@@ -1,18 +1,23 @@
-import type { V2_MetaFunction } from "@remix-run/cloudflare";
-import riceBowl from "public/assets/bowl-rice-regular-48.png";
+import {
+  UserButton,
+} from "@clerk/remix";
+import { getAuth } from "@clerk/remix/ssr.server";
+import { LoaderFunction, redirect } from "@remix-run/cloudflare";
 
-export const meta: V2_MetaFunction = () => {
-  return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
-  ];
-};
+export const loader: LoaderFunction = async (args) => {
+  const { userId } = await getAuth(args);
+  if(!userId){
+    return redirect("/sign-in");
+  }
+  return {};
+}
 
 export default function Index() {
   return (
-    <div className="h-screen bg-blue-100 flex justify-center items-center">
-      <h2 className="inline-flex align-middle text-blue-600 font-extrabold text-5xl">
-        <img className="object-bottom px-3" src={riceBowl}/> Welcome to Protofolio</h2>
+    <div>
+        <h1>Index route</h1>
+        <p>You are signed in!</p>
+        <UserButton afterSignOutUrl="/"/>
     </div>
-  )
+  );
 }

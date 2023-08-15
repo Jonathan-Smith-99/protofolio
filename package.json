@@ -9,6 +9,8 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@clerk/remix": "^2.9.1",
+    "@heroicons/react": "^2.0.18",
     "@remix-run/cloudflare": "^1.19.3",
     "@remix-run/cloudflare-pages": "^1.19.3",
     "@remix-run/css-bundle": "^1.19.3",
