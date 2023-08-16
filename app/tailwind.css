@@ -1,0 +1,5 @@
+@import url("https://fonts.googleapis.com/css?family=Poppins|Fira+Sans|Merriweather");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
