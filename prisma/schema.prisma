@@ -14,10 +14,57 @@ model User {
   id           String    @id(map: "primary") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt    DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt    DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
-  username     String    @unique
+  email        String    @unique
   passwordHash String    @map("password_hash")
-  firstName   String?   @map("first_name")
-  lastName    String?   @map("last_name")
+  firstName    String?   @map("first_name")
+  lastName     String?   @map("last_name")
 
   @@map("users")
+}
+
+model Account {
+  id        String    @id(map: "primary") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  checkpoint DateTime? @map("checkpoint") @db.Timestamptz(6)
+  checkpointBalance Decimal? @map("checkpoint_balance")
+  name      String    
+  userId    String    @map("user_id")
+  accountNumber String? @map("account_number")
+  institutionId String? @map("institution_id")
+  accountType String @map("account_type")
+  balance   Decimal   @map("balance")
+  interestRate Decimal @map("interest_rate")
+  minimumBalance Decimal @map("minimum_balance")
+  monthlyFee Decimal @map("monthly_fee")
+  notes String? @map("notes")
+
+  @@map("accounts")
+}
+
+enum AccountType {
+  CHECKING
+  SAVINGS
+  CREDITCARD
+  BROKERAGE
+  LOAN
+  CD
+  MONEYMARKET
+  MORTGAGE
+  TRADITIONALIRA
+  ROTHIRA
+  TRAD401K
+  ROTH401K
+  SIMPLEIRA
+  CUSTODIAL
+  HSA
+  FSA
+  PAYPAL
+  ASSET
+  OTHER
+  MUTUALFUND
+  CASH
+  CRYPTOEXCHANGE
+  CRYPTOWALLET
+
 }

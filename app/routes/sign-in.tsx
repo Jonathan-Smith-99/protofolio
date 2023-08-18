@@ -1,20 +1,104 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Layout } from "~/components/layout"
 import { FormField } from '~/components/form-field'
+import { ActionFunction, json, LoaderFunction, redirect } from '@remix-run/node'
+import { useActionData } from '@remix-run/react'
+import { validateEmail, validateName, validatePassword } from '~/utils/validators.server'
+import { login, register, getUser } from '~/utils/auth.server'
+
+export const loader: LoaderFunction = async ({ request }) => {
+    // If there's already a user in the session, redirect to the home page
+    return (await getUser(request)) ? redirect('/main') : null
+}
+
+export const action: ActionFunction = async ({ request }) => {
+    const form = await request.formData()
+    const action = form.get('_action')
+    const email = form.get('email')
+    const password = form.get('password')
+    const firstName = form.get('firstName') as string
+    const lastName = form.get('lastName') as string
+
+    if (typeof action !== 'string' || typeof email !== 'string' || typeof password !== 'string') {
+        return json({ error: `Invalid Form Data`, form: action }, { status: 400 })
+    }
+        
+    if (action === 'register' && (typeof firstName !== 'string' || typeof lastName !== 'string')) {
+        return json({ error: `Invalid Form Data`, form: action }, { status: 400 })
+    }
+
+    const errors = {
+        email: validateEmail(email),
+        password: validatePassword(password),
+        ...(action === 'register'
+            ? {
+                firstName: validateName((firstName as string) || ""),
+                lastName: validateName((lastName as string) || ""),
+            }
+            : {}),
+    }
+    
+    if (Object.values(errors).some(Boolean)) {
+        return json({ errors, fields: { email, password, firstName, lastName}, form: action }, { status: 400 })
+    }
+
+    switch (action) {
+        case 'login': {
+            return await login({ email, password })
+        }
+        case 'register': {
+            const registerData = { 
+                email, 
+                password, 
+                firstName,
+                lastName,
+            }
+            return await register(registerData)
+        }
+    }
+}
+
 
 export default function SignIn() {
     const [action, setAction] = useState('login')
+    const actionData = useActionData()
+    const firstLoad = useRef(true)
+    const [errors, setErrors] = useState(actionData?.errors || {})
+    const [formError, setFormError] = useState(actionData?.error || null)
     const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-        firstName: '',
-        lastName: '',
-        })
+        email: actionData?.fields?.email || '',
+        password: actionData?.fields?.password || '',
+        firstName: actionData?.fields?.firstName || '',
+        lastName: actionData?.fields?.lastName || '',
+    })
 
     // Updates the form data when an input changes
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>, field: string) => {
         setFormData(form => ({ ...form, [field]: event.target.value }))
     }
+
+    useEffect(() => {
+        if (!firstLoad.current) {
+            const newState = {
+                email: '',
+                password: '',
+                firstName: '',
+                lastName: '',
+            }
+            setErrors(newState)
+            setFormError('')
+            setFormData(newState)
+        }
+    }, [action])
+        
+    useEffect(() => {
+        if (!firstLoad.current) {
+            setFormError('')
+        }
+    }, [formData])
+    
+    useEffect(() => { firstLoad.current = false }, [])
+    
 
     return (
         <Layout>
@@ -25,11 +109,13 @@ export default function SignIn() {
                 </p>
                         
                 <form method="POST" className="rounded-2xl bg-gray-200 p-6 w-96">
+                    <div className="text-xs font-semibold text-center tracking-wide text-red-500 w-full">{formError}</div>
                     <FormField
                         htmlFor="email"
                         label="Email"
                         value={formData.email}
                         onChange={e => handleInputChange(e, 'email')}
+                        error={errors?.email}
                     />
                     <FormField
                         htmlFor="password"
@@ -37,6 +123,7 @@ export default function SignIn() {
                         label="Password"
                         value={formData.password}
                         onChange={e => handleInputChange(e, 'password')}
+                        error={errors?.password}
                     />
                     {action === 'register' && (
                         <>
@@ -45,12 +132,14 @@ export default function SignIn() {
                                 label="First Name"
                                 onChange={e => handleInputChange(e, 'firstName')}
                                 value={formData.firstName}
+                                error={errors?.firstName}
                             />
                             <FormField
                                 htmlFor="lastName"
                                 label="Last Name"
                                 onChange={e => handleInputChange(e, 'lastName')}
                                 value={formData.lastName}
+                                error={errors?.lastName}
                             />
                         </> 
                     )}                   
@@ -63,12 +152,12 @@ export default function SignIn() {
                     </div>
                 </form>
                 <div>
-                    <p className="text-slate-300">{action === 'login' ? 'New to Protofolio?' : 'Already have an account?'}</p>                 
+                    <p className="text-slate-300">{action === 'sign-in' ? 'New to Protofolio?' : 'Already have an account?'}</p>                 
                     <button
-                    onClick={() => setAction(action == 'login' ? 'register' : 'login')}
-                    className="rounded-xl bg-yellow-300 font-semibold text-blue-600 px-3 py-2 transition duration-300 ease-in-out hover:bg-yellow-400 hover:-translate-y-1"
-                    >
-                        {action === 'login' ? 'Sign Up' : 'Sign In'}
+                        onClick={() => setAction(action == 'sign-in' ? 'register' : 'sign-in')}
+                        className="rounded-xl bg-yellow-300 font-semibold text-blue-600 px-3 py-2 transition duration-300 ease-in-out hover:bg-yellow-400 hover:-translate-y-1"
+                        >
+                            {action === 'sign-in' ? 'Sign Up' : 'Sign In'}
                     </button>
                 </div>
             </div>
@@ -77,31 +166,3 @@ export default function SignIn() {
 }
 
 
-<div className="hero-content flex-col justify-center items-center lg:flex-row-reverse">
-<div className="text-center lg:text-left">
-    <h1 className="text-5xl font-bold">Login now!</h1>
-    <p className="py-6">Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem quasi. In deleniti eaque aut repudiandae et a id nisi.</p>
-</div>
-<div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-    <div className="card-body">
-        <div className="form-control">
-            <label className="label">
-                <span className="label-text">Email</span>
-            </label>
-            <input type="text" placeholder="email" className="input input-bordered" />
-        </div>
-        <div className="form-control">
-            <label className="label">
-                <span className="label-text">Password</span>
-            </label>
-            <input type="text" placeholder="password" className="input input-bordered" />
-            <label className="label">
-                <a href="#" className="label-text-alt link link-hover">Forgot password?</a>
-            </label>
-        </div>
-        <div className="form-control mt-6">
-            <button className="btn btn-primary">Login</button>
-        </div>
-    </div>
-</div>
-</div>

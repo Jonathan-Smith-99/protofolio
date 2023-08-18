@@ -3,9 +3,9 @@ import { UserIcon, BellAlertIcon } from '@heroicons/react/24/solid'
 
 export default function Navbar() {
     return (
-        <div className="navbar shadow-md bg-blue-700">
+        <div className="navbar fixed shadow-md bg-blue-700">
             <div className="flex-1">
-                <Link className="btn btn-ghost normal-case text-xl" to="/">
+                <Link className="btn btn-ghost normal-case text-xl" to="/main">
                     <img className="object-cover h-10" src="\images\protofolio-high-resolution-logo-color-on-transparent-background.png" alt="protofolio" />
                 </Link>
             </div>
@@ -41,7 +41,11 @@ export default function Navbar() {
                             </a>
                         </li>
                         <li><a>Settings</a></li>
-                        <li><a>Logout</a></li>
+                        <li>
+                            <form action="/logout" method="POST">
+                                <button type="submit">Logout</button>
+                            </form>
+                        </li>
                     </ul>
                 </div>
             </div>

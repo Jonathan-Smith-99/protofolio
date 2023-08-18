@@ -1,17 +1,12 @@
-import type { V2_MetaFunction } from "@remix-run/node";
+import { type LoaderFunction, redirect } from "@remix-run/node";
 import { Link } from "@remix-run/react";
-import { Layout } from "~/components/layout";
-
-export const meta: V2_MetaFunction = () => {
-  return [
-    { title: "Protofolio App" },
-    { name: "description", content: "Hello, this is protofolio." },
-  ];
-};
+import Navbar from "~/components/navbar";
+import { redirectIfLoggedIn } from "~/utils/auth.server";
 
 export default function Index() {
   return (
-    <Layout>
+    <div className="flex flex-col font-['Fira_Sans']">
+      <Navbar />
       <section className="text-gray-600 body-font">
         <div className="container mx-auto flex px-5 py-24 md:flex-row flex-col items-center">
           <div className="lg:max-w-lg lg:w-full md:w-1/2 w-5/6 mb-10 md:mb-0">
@@ -24,12 +19,12 @@ export default function Index() {
             <p className="mb-8 leading-relaxed">Copper mug try-hard pitchfork pour-over freegan heirloom neutra air plant cold-pressed tacos poke beard tote bag. Heirloom echo park mlkshk tote bag selvage hot chicken authentic tumeric truffaut hexagon try-hard chambray.</p>
             <div className="flex justify-center">
               <Link to="/sign-in" prefetch="intent" className="inline-flex text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg">Sign In</Link>
-              <Link to="/sign-up" prefetch="intent" className="ml-4 inline-flex text-gray-700 bg-gray-100 border-0 py-2 px-6 focus:outline-none hover:bg-gray-200 rounded text-lg">Sign Up</Link>
+              <Link to="/sign-in" prefetch="intent" className="ml-4 inline-flex text-gray-700 bg-gray-100 border-0 py-2 px-6 focus:outline-none hover:bg-gray-200 rounded text-lg">Sign Up</Link>
             </div>
           </div>
         </div>
       </section>
-    </Layout>
+    </div>
     
     
   )
